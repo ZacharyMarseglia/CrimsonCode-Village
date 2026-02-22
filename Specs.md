@@ -25,11 +25,11 @@ The app uses a background alarm system to trigger periodic checks (default: ever
 
 | Component | Technology | Implementation Details |
 | --- | --- | --- |
-| **Language** | TBD | TBD |
+| **Language** | C++ | TBD |
 | **Persistence** | TBD | TBD |
-| **Transcription** | `whisper.cpp` or `whisper-rn` (using models based off FUTO Voice Input implementation) | TBD |
-| **Storage** | `SAF` or `react-native-saf-x` | Storage Access Framework for cross-app directory access. |
-| **Alarms** | `RTC_WAKEUP` or `react-native-alarms` | High-precision scheduling that survives sleep states. |
+| **Transcription** | `whisper.cpp` (using models based off FUTO Voice Input implementation) | TBD |
+| **Storage** | `react-native-saf-x` | Storage Access Framework for cross-app directory access. |
+| **Alarms** | `react-native-alarms` | High-precision scheduling that survives sleep states. |
 
 ---
 

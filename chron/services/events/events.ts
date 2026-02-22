@@ -62,10 +62,27 @@ export type Event = {
 
 export interface IEventStore {
     loadEvents(): Event[] | Promise<Event[]>;
+    saveEvents(events: Event[]): void | Promise<void>;
 }
 
+
 export class MemoryEventStore implements IEventStore {
-    loadEvents(): Event[] {
+  private events: Event[];
+
+  constructor(seed?: Event[]) {
+    this.events = seed ?? MemoryEventStore.defaultSeed();
+  }
+
+  loadEvents(): Event[] {
+    // Return a shallow copy to avoid callers mutating internal array directly
+    return [...this.events];
+  }
+
+  saveEvents(events: Event[]): void {
+    // Store a copy
+    this.events = [...events];
+  }
+      private static defaultSeed(): Event[] {
         const study: Event = {
             name: "Study Block",
             enabled: true,
@@ -115,7 +132,7 @@ export class EventManager {
     const today = this.platform.todayDayOfWeek();
     const now = this.platform.nowTimeOfDay();
 
-    const dayIdx = today as number; // 0..6
+    const dayIdx = today as number; 
     const nowMin = now.toMinutes();
 
     const events = await Promise.resolve(this.store.loadEvents());
@@ -134,5 +151,105 @@ export class EventManager {
     }
 
     return null;
+  }
+
+  async listEvents(): Promise<Event[]> {
+    return await Promise.resolve(this.store.loadEvents());
+  }
+
+  async addEvent(event: Event): Promise<void> {
+    EventManager.validateEvent(event);
+
+    const events = await this.listEvents();
+    events.push(event);
+
+    await Promise.resolve(this.store.saveEvents(events));
+    this.logger.info(`[Event] Added: ${event.name}`);
+  }
+
+  async replaceEvent(index: number, event: Event): Promise<void> {
+    EventManager.validateIndex(index);
+
+    EventManager.validateEvent(event);
+
+    const events = await this.listEvents();
+    if (index < 0 || index >= events.length) throw new RangeError("Event index out of range");
+
+    events[index] = event;
+
+    await Promise.resolve(this.store.saveEvents(events));
+    this.logger.info(`[Event] Replaced index ${index} -> ${event.name}`);
+  }
+
+  async updateEvent(index: number, patch: Partial<Event>): Promise<void> {
+    EventManager.validateIndex(index);
+
+    const events = await this.listEvents();
+    if (index < 0 || index >= events.length) throw new RangeError("Event index out of range");
+
+    const current = events[index];
+
+    const next: Event = {
+      ...current,
+      ...patch,
+      recurrence: (patch.recurrence ?? current.recurrence) as Event["recurrence"],
+      start: patch.start ?? current.start,
+      end: patch.end ?? current.end,
+      enabled: patch.enabled ?? current.enabled,
+      name: patch.name ?? current.name,
+    };
+
+    EventManager.validateEvent(next);
+
+    events[index] = next;
+
+    await Promise.resolve(this.store.saveEvents(events));
+    this.logger.info(`[Event] Updated index ${index} -> ${next.name}`);
+  }
+
+  async deleteEvent(index: number): Promise<void> {
+    EventManager.validateIndex(index);
+
+    const events = await this.listEvents();
+    if (index < 0 || index >= events.length) throw new RangeError("Event index out of range");
+
+    const [removed] = events.splice(index, 1);
+
+    await Promise.resolve(this.store.saveEvents(events));
+    this.logger.info(`[Event] Deleted index ${index} -> ${removed?.name ?? "(unknown)"}`);
+  }
+
+  async toggleEventEnabled(index: number, enabled?: boolean): Promise<void> {
+    const events = await this.listEvents();
+    if (index < 0 || index >= events.length) throw new RangeError("Event index out of range");
+
+    const nextEnabled = enabled ?? !events[index].enabled;
+    await this.updateEvent(index, { enabled: nextEnabled });
+  }
+
+  async setEventRecurrenceDay(index: number, day: DayOfWeek, value: boolean): Promise<void> {
+    const events = await this.listEvents();
+    if (index < 0 || index >= events.length) throw new RangeError("Event index out of range");
+
+    const rec = [...events[index].recurrence] as Event["recurrence"];
+    rec[day] = value;
+
+    await this.updateEvent(index, { recurrence: rec });
+  }
+  private static validateIndex(index: number): void {
+    if (!Number.isInteger(index)) throw new TypeError("Event index must be an integer");
+    if (index < 0) throw new RangeError("Event index must be >= 0");
+  }
+
+  static validateEvent(e: Event): void {
+    if (!e.name || e.name.trim().length === 0) throw new Error("Event name is required");
+
+    if (!Array.isArray(e.recurrence) || e.recurrence.length !== 7) {
+      throw new Error("Event recurrence must be an array of 7 booleans (Sun-Sat)");
+    }
+
+    const startMin = e.start.toMinutes();
+    const endMin = e.end.toMinutes();
+    if (!Number.isFinite(startMin) || !Number.isFinite(endMin)) throw new Error("Invalid start/end time");
   }
 }

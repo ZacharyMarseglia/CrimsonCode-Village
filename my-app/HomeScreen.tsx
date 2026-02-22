@@ -63,7 +63,7 @@ export default function ChronHomeScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safe}>
+  <SafeAreaView style={styles.safe}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.container}
@@ -77,7 +77,7 @@ export default function ChronHomeScreen() {
           </View>
 
           <Pressable
-            style={({ pressed }) => [
+            style={({ pressed }: { pressed: boolean }) => [
               styles.iconBtn,
               pressed && styles.pressed,
             ]}
@@ -108,7 +108,7 @@ export default function ChronHomeScreen() {
             onPress={() => setEnabled((v) => !v)}
             accessibilityRole="switch"
             accessibilityState={{ checked: enabled }}
-            style={({ pressed }) => [
+            style={({ pressed }: { pressed: boolean }) => [
               styles.toggle,
               enabled && styles.toggleOn,
               pressed && { opacity: 0.9 },
@@ -125,7 +125,7 @@ export default function ChronHomeScreen() {
 
         {/* Primary action */}
         <Pressable
-          style={({ pressed }) => [styles.primary, pressed && styles.pressed]}
+          style={({ pressed }: { pressed: boolean }) => [styles.primary, pressed && styles.pressed]}
           accessibilityRole="button"
           accessibilityLabel="Record Log Now"
           onPress={() => {

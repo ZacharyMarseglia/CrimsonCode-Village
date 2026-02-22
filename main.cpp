@@ -7,6 +7,7 @@
 
 // Your project headers (adjust paths if needed)
 #include "logging/ILogger.hpp"
+#include "logging/ConsoleLogger.hpp"
 #include "platform/MockPlatform.hpp"
 #include "events/MemoryEventStore.hpp"
 #include "events/EventManager.hpp"

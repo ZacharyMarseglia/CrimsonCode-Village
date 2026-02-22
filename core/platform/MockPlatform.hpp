@@ -33,4 +33,9 @@ public:
 
 private:
     ILogger& m_logger;
+    bool m_vaultInitialized = true;
+    bool m_batterySafe = true;
+    bool m_dndDisabled = true;
+    DayOfWeek m_nowDay = DayOfWeek::Mon;
+    TimeOfDay m_nowTime{12, 0};
 };

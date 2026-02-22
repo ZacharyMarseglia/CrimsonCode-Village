@@ -25,7 +25,7 @@ The app uses a background alarm system to trigger periodic checks (default: ever
 
 | Component | Technology | Implementation Details |
 | --- | --- | --- |
-| **Language** | C++ | TBD |
+| **Language** | React (JavaScript, HTML, CSS) | TBD |
 | **Persistence** | TBD | TBD |
 | **Transcription** | `whisper.cpp` (using models based off FUTO Voice Input implementation) | TBD |
 | **Storage** | `react-native-fs` | Storage Access Framework for cross-app directory access. |

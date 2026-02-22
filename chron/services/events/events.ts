@@ -1,7 +1,11 @@
 // events.ts 
-// contains Logic for DayofWeek, TimteofDay, Event, IEventStore, MemoryEventStore, and EventManager
+import type { ILogger } from "../logging/ILogger"; 
 
-import { get } from "http";
+
+export interface IEventPlatform {
+  todayDayOfWeek(): DayOfWeek;
+  nowTimeOfDay(): TimeOfDay;
+}
 
 export enum DayOfWeek {
     Sun = 0,
@@ -55,13 +59,7 @@ export type Event = {
     end: TimeOfDay;
 }
 
-export interface ILogger {
-    info(message: string): void;
-}
-export interface IPlatform {
-    todayDayOfWeek(): DayOfWeek;
-    nowTimeOfDay(): TimeOfDay;
-}
+
 export interface IEventStore {
     loadEvents(): Event[] | Promise<Event[]>;
 }
@@ -94,15 +92,16 @@ export class MemoryEventStore implements IEventStore {
 }
 
 export class EventManager {
-  private readonly platform: IPlatform;
+  private readonly platform: IEventPlatform;
   private readonly logger: ILogger;
   private readonly store: IEventStore;
 
-  constructor(platform: IPlatform, logger: ILogger, store: IEventStore) {
+  constructor(platform: IEventPlatform, logger: ILogger, store: IEventStore) {
     this.platform = platform;
-    this.logger = logger;   
+    this.logger = logger;
     this.store = store;
   }
+  
   private static isWithinWindow(nowMin: number, startMin: number, endMin: number): boolean {
     if (startMin === endMin) return false; // No time window if start and end are the same
     if (startMin < endMin) {
@@ -137,4 +136,3 @@ export class EventManager {
     return null;
   }
 }
-      

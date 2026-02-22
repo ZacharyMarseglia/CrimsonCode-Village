@@ -1,23 +1,8 @@
 // CallController.ts
+import type { ICallActions } from "./ICallActions";
+import type { ILogger } from "../logging/ILogger";
+import type { IPlatform } from "../platform/IPlatform";
 
-interface ICallActions {
-  startIncomingCall(): void;
-  autoLogEvent(eventName: string): void;
-}
-
-interface ILogger {
-  info(message: string): void;
-}
-
-interface IPlatform {
-  showCallNotification(): void | Promise<void>;
-  startRingtoneAndVibration(): void | Promise<void>;
-
-  nowLocalHHMM(): string;
-  todayISODate(): string;
-
-  appendToDailyNoteMarkdown(dateIso: string, line: string): void | Promise<void>;
-}
 
 export class CallController implements ICallActions {
   private readonly platform: IPlatform;

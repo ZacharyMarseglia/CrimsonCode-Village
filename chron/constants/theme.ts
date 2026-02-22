@@ -9,18 +9,22 @@ export const Colors = {
   light: {
     text: '#11181C',
     background: '#fff',
-    buttonBackground: '#0aa44a',
+    buttonBackground: '#606060',
+    buttonBackgroundPressed: '#404040',
+    buttonBackgroundSpecial: '#00b23e',
     buttonText: '#fff',
     icon: '#687076',
     title: '#fff',
   },
   dark: {
     text: '#ECEDEE',
-    background: '#4d4d4d',
-    buttonBackground: '#0aa44a',
+    background: '#111111',
+    buttonBackground: '#a8a8a8',
+    buttonBackgroundPressed: '#c0c0c0',
+    buttonBackgroundSpecial: '#00b23e',
     buttonText: '#fff',
     icon: '#9BA1A6',
-    title: '#001d04',
+    title: '#004209',
   },
 };
 

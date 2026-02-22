@@ -7,6 +7,7 @@ Team: Zachary Marseglia and Evan Glasscock
 To run Chron with Expo, run the following command:
 
 ```
+cd chron
 npx expo start
 ````
 
@@ -19,11 +20,17 @@ Note that some actions may not be available on platforms or via the Expo app.
 To build for android, first ensure Android Studio is installed and the platform components for the platform you want to build for is installed. Then run the following command:
 
 ```
-eas build -p android --profile preview --local
+cd chron
+npx expo prebuild --platform android
+cd android
+./gradlew assembleDebug
 ```
 
 ## Building for iOS
 
 ```
-eas build -p ios --profile preview --local
+cd chron
+npx expo prebuild --platform ios
 ```
+
+Then open the xcworkspace file and build the project in XCode.

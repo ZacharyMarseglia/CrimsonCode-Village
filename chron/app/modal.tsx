@@ -1,7 +1,5 @@
 import { Pressable, StyleSheet } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { router } from 'expo-router';
 
 export default function ModalScreen({ title, contents }: { title: string; contents: string }) {
@@ -10,13 +8,13 @@ export default function ModalScreen({ title, contents }: { title: string; conten
   };
   
   return (
-    <ThemedView style={[styles.container, { display: 'none' }]}>
-      <ThemedText type="title">{title}</ThemedText>
-      <ThemedText>{contents}</ThemedText>
-      <Pressable style={styles.link} onPress={dismissModal}>
-        <ThemedText type="link">Dismiss</ThemedText>
+    <div style={styles.container}>
+      <h1>{title}</h1>
+      <p>{contents}</p>
+      <Pressable onPress={dismissModal} style={styles.link}>
+        <div>Dismiss</div>
       </Pressable>
-    </ThemedView>
+    </div>
   );
 }
 

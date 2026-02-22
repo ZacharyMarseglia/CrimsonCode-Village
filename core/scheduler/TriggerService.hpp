@@ -1,6 +1,6 @@
 #pragma once
 #include "core/IPlatform.hpp"
-#include "core/ILogger.hpp"
+#include "logging/ILogger.hpp"
 #include "events/EventManager.hpp"
 
 class ICallActions

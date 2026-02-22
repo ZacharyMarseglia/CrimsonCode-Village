@@ -1,7 +1,7 @@
 // will be replaced with actual platform implementation later
 #pragma once
 #include "core/IPlatform.hpp"
-#include "core/ILogger.hpp"
+#include "logging/ILogger.hpp"
 #include <string>
 
 class MockPlatform : public IPlatform
@@ -25,6 +25,11 @@ public:
     void saveVoiceMemoPlaceholder(const std::string& fileName) override;
     DayOfWeek todayDayOfWeek() override;
     TimeOfDay nowTimeOfDay() override;
+    // Debug/test controls
+    void setVaultInitialized(bool v);
+    void setBatterySafe(bool v);
+    void setDndDisabled(bool v);
+    void setNow(DayOfWeek day, TimeOfDay time);
 
 private:
     ILogger& m_logger;

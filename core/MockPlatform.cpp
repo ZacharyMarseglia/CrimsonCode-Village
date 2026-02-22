@@ -9,6 +9,9 @@ MockPlatform::MockPlatform(ILogger& logger) : m_logger(logger) {}
 bool MockPlatform::vaultIsInitialized() { return true; }
 bool MockPlatform::isBatterySafe() { return true; }
 bool MockPlatform::isDndDisabled() { return true; }
+DayOfWeek m_day = DayOfWeek::Mon;
+TimeOfDay m_time{12,0};
+
 
 std::string MockPlatform::nowLocalHHMM()
 {

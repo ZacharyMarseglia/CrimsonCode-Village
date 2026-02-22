@@ -1,5 +1,5 @@
 #pragma once
-#include "core/ILogger.hpp"
+#include "logging/ILogger.hpp"
 #include <iostream>
 
 class ConsoleLogger : public ILogger

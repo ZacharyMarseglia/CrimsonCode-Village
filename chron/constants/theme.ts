@@ -13,7 +13,8 @@ export const Colors = {
     buttonBackgroundPressed: '#404040',
     buttonBackgroundSpecial: '#00b23e',
     buttonText: '#fff',
-    icon: '#687076',
+    iconLight: '#414141',
+    iconDark: '#687076',
     title: '#fff',
   },
   dark: {
@@ -23,7 +24,8 @@ export const Colors = {
     buttonBackgroundPressed: '#c0c0c0',
     buttonBackgroundSpecial: '#00b23e',
     buttonText: '#fff',
-    icon: '#9BA1A6',
+    iconLight: '#9BA1A6',
+    iconDark: '#414141',
     title: '#004209',
   },
 };

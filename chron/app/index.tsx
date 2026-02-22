@@ -4,7 +4,7 @@ import ActionButton from "@/components/ui/ActionButton";
 import TitleBar from "@/components/ui/TitleBar";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import SettingsPanel from "@/components/ui/SettingsPanel";
-import { useState } from "react";
+import React, { useState } from "react";
 import EventSettings from "./EventSettings";
 
 export default function HomePage() {
@@ -22,7 +22,7 @@ export default function HomePage() {
             <TitleBar>Chron</TitleBar>
             <View style={styles.homePageContent}>
                 <View>
-                    <ActionButton title="RECORD LOG NOW" buttonStyle={ styles.homePageButtonSpacing } colors={{ background: buttonBackgroundColorSpecial }} onPress={() => setEventsOpened(true)} />
+                    <ActionButton title="RECORD LOG NOW" buttonStyle={ styles.homePageButtonSpacing } colors={{ background: buttonBackgroundColorSpecial }} onPress={() => (true) /*TODO: Start call*/ } />
                     <ActionButton title="EVENTS" buttonStyle={ styles.homePageButtonSpacing } onPress={() => setEventsOpened(true)} />
                     <ActionButton title="GENERAL SETTINGS" buttonStyle={ styles.homePageButtonSpacing } onPress={() => setGeneralSettingsOpened(true)} />
                     <ActionButton title="MARKDOWN SETTINGS" buttonStyle={ styles.homePageButtonSpacing } onPress={() => setMarkdownSettingsOpened(true)} />
@@ -32,7 +32,7 @@ export default function HomePage() {
                     <Text style={{ ...styles.recentActivityText, color: textColor }}>Recent Activity</Text>
                 </View>
             </View>
-            <SettingsPanel visible={eventsOpened} title="Events" content={<EventSettings />} />
+            <SettingsPanel visible={eventsOpened} title="Events" content={<EventSettings setVisible={setEventsOpened} />} />
             <SettingsPanel visible={generalSettingsOpened} title="General Settings" content={
                 <Text style={{ color: textColor }}>Settings content goes here</Text>
             } />

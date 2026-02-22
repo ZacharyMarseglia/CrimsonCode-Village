@@ -1,12 +1,12 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { StyleSheet, View, Text, ViewStyle } from 'react-native';
 
-export default function TitleBar({ children }: { children: React.ReactNode }) {
+export default function TitleBar({ barStyle, children }: { barStyle?: ViewStyle, children: React.ReactNode }) {
     const backgroundColor = useThemeColor({ colorName: 'title' });
     const color = useThemeColor({ colorName: 'text' });
 
     return (
-        <View style={{ ...styles.titleContainer, backgroundColor }}>
+        <View style={{ ...styles.titleContainer, backgroundColor, ...barStyle }}>
             <Text style={{ ...styles.titleText, color }}>{children}</Text>
         </View>
     );

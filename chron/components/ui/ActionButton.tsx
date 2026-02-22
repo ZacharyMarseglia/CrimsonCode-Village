@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
-export default function ActionButton({ title, onPress, buttonStyle, colors }: { title: string; onPress: () => void; colors?: { background?: string; text?: string }; buttonStyle?: object }) {
+export default function ActionButton({ title, onPress, buttonStyle, colors }: { title: React.ReactNode; onPress: () => void; colors?: { background?: string; text?: string }; buttonStyle?: object }) {
     const backgroundColor = colors?.background || useThemeColor({ colorName: 'buttonBackground' });
     const color = colors?.text || useThemeColor({ colorName: 'buttonText' });
     const buttonBackgroundPressedColor = useThemeColor({ colorName: 'buttonBackgroundPressed' });

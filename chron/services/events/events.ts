@@ -1,6 +1,6 @@
 // events.ts 
 import type { ILogger } from "../logging/ILogger"; 
-
+import * as SQLite from "expo-sqlite";
 
 export interface IEventPlatform {
   todayDayOfWeek(): DayOfWeek;
@@ -51,7 +51,7 @@ export class TimeOfDay {
 
 export type Event = {
     name: string;
-    enabled: Boolean;
+    enabled: boolean;
 
     recurrence: [boolean, boolean, boolean, boolean, boolean, boolean, boolean]; // Sun-Sat
 
@@ -251,5 +251,116 @@ export class EventManager {
     const startMin = e.start.toMinutes();
     const endMin = e.end.toMinutes();
     if (!Number.isFinite(startMin) || !Number.isFinite(endMin)) throw new Error("Invalid start/end time");
+  }
+}
+
+type EventRow = {
+  id: number;
+  name: string;
+  enabled: number;          
+  recurrenceMask: number;   
+  startMin: number;          
+  endMin: number;
+};
+
+function recurrenceToMask(rec: Event["recurrence"]): number {
+  let mask = 0;
+  for (let i = 0; i < 7; i++) {
+    if (rec[i]) mask |= 1 << i;
+  }
+  return mask;
+}
+
+function maskToRecurrence(mask: number): Event["recurrence"] {
+  const rec: boolean[] = [];
+  for (let i = 0; i < 7; i++) rec[i] = (mask & (1 << i)) !== 0;
+  return rec as Event["recurrence"];
+}
+
+export class SQLiteEventStore implements IEventStore {
+  private readonly dbReady: Promise<SQLite.SQLiteDatabase>;
+
+  constructor(dbName: string = "chron.db") {
+    this.dbReady = this.init(dbName);
+  }
+
+  private async init(dbName: string): Promise<SQLite.SQLiteDatabase> {
+    const db = await SQLite.openDatabaseAsync(dbName);
+
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        enabled INTEGER NOT NULL,
+        recurrenceMask INTEGER NOT NULL,
+        startMin INTEGER NOT NULL,
+        endMin INTEGER NOT NULL
+      );
+    `);
+
+    return db;
+  }
+
+  private async db(): Promise<SQLite.SQLiteDatabase> {
+    return await this.dbReady;
+  }
+
+  async loadEvents(): Promise<Event[]> {
+    const db = await this.db();
+
+    const rows = await db.getAllAsync<EventRow>(`
+      SELECT id, name, enabled, recurrenceMask, startMin, endMin
+      FROM events
+      ORDER BY id ASC;
+    `);
+
+    return rows.map((r) => ({
+      name: r.name,
+      enabled: r.enabled === 1,
+      recurrence: maskToRecurrence(r.recurrenceMask),
+      start: new TimeOfDay(Math.floor(r.startMin / 60), r.startMin % 60),
+      end: new TimeOfDay(Math.floor(r.endMin / 60), r.endMin % 60),
+    }));
+  }
+
+  async saveEvents(events: Event[]): Promise<void> {
+    const db = await this.db();
+
+    await db.execAsync("BEGIN TRANSACTION;");
+    try {
+      await db.execAsync("DELETE FROM events;");
+
+      for (const e of events) {
+        await db.runAsync(
+          `INSERT INTO events (name, enabled, recurrenceMask, startMin, endMin)
+           VALUES (?, ?, ?, ?, ?);`,
+          [
+            e.name,
+            e.enabled ? 1 : 0,
+            recurrenceToMask(e.recurrence),
+            e.start.toMinutes(),
+            e.end.toMinutes(),
+          ]
+        );
+      }
+
+      await db.execAsync("COMMIT;");
+    } catch (err) {
+      await db.execAsync("ROLLBACK;");
+      throw err;
+    }
+  }
+
+  async seedIfEmpty(defaultEvents: Event[]): Promise<void> {
+    const db = await this.db();
+
+    const rows = await db.getAllAsync<{ c: number }>(
+      "SELECT COUNT(*) as c FROM events;"
+    );
+
+    const count = rows[0]?.c ?? 0;
+    if (count === 0) {
+      await this.saveEvents(defaultEvents);
+    }
   }
 }
